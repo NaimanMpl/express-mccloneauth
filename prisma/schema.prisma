@@ -21,3 +21,16 @@ model Users {
   password  String
   createdAt DateTime @default(now())
 }
+
+enum ServerStatus {
+  ONLINE
+  OFFLINE
+  MAINTENANCE
+}
+
+model ServerInfo {
+  id            Int          @id @default(autoincrement())
+  status        ServerStatus
+  ip            String
+  onlinePlayers Int
+}
