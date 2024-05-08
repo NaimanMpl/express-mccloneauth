@@ -1,9 +1,16 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import userController from '../controllers/user.controller';
 import authMiddleware from '../middlewares/auth.middleware';
 import { LoginCredentials, RegisterPayload } from '../models/user.model';
+
+
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 const router = Router();
 
@@ -20,10 +27,13 @@ router.post('/login', authMiddleware.handleLogin, async (req, res) => {
 
     if (!validCredentials) {
         res.status(400).json({ message: 'Email ou mot de passe incorrect.' });
-        return; 
+        return;
     }
 
-    res.status(200).json({ message: 'Authenticated', user: {...matchingUser, password: undefined } });
+    const payload = { ...matchingUser, password: undefined };
+    const authToken = jwt.sign(payload, process.env.JWT_SECRET_KEY!, { expiresIn: '1h' });
+
+    res.status(200).json({ message: 'Authenticated', user: {...matchingUser, password: undefined, token: authToken }});
 })
 
 router.post('/register', authMiddleware.handleRegister, async (req, res) => {
