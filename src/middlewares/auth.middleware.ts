@@ -61,6 +61,18 @@ class AuthMiddleware {
         next();
     }
 
+    public hasToken = async (req: Request, res: Response, next: NextFunction) => {
+        
+        const data = req.body;
+        if (!data.token) {
+            res.status(400).json({ message: 'Token invalide'});
+            return;
+        }
+
+        next();
+
+    }
+
 }
 
 export default new AuthMiddleware();

@@ -65,6 +65,15 @@ router.post('/register', authMiddleware.handleRegister, async (req, res) => {
     }
 });
 
-
+router.post('/validtoken', authMiddleware.hasToken, async (req, res) => {
+    const { token } = req.body;
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET_KEY!);
+        res.status(200).json({ message: 'Success', user: payload });
+    } catch (e) {
+        res.status(500).json({ message: 'Something went wrong.' });
+        console.error(e);
+    }
+});
 
 export default router;
