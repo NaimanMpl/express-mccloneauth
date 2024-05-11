@@ -25,7 +25,12 @@ class UserController {
                 data: {
                     name: user.username,
                     email: user.email,
-                    password: hashedPassword
+                    password: hashedPassword,
+                    skin: {
+                        create: {
+                            link: process.env.DEFAULT_SKIN_LINK!,
+                        }
+                    }
                 }
             });
             console.log(`User ${user.username} (${user.email}) has been created successfully`);
