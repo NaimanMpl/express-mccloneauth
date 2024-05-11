@@ -9,6 +9,9 @@ class UserController {
         const matchingUser = await prisma.users.findFirst({
             where: {
                 email: email
+            },
+            include: {
+                skin: true
             }
         });
         return matchingUser;

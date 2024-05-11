@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import userController from '../controllers/user.controller';
 import authMiddleware from '../middlewares/auth.middleware';
 import { LoginCredentials, RegisterPayload } from '../models/user.model';
-
+import { getBase64Image } from '../utils';
 
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
@@ -30,10 +30,18 @@ router.post('/login', authMiddleware.handleLogin, async (req, res) => {
         return;
     }
 
-    const payload = { ...matchingUser, password: undefined };
+    if (!matchingUser.skin) {
+        res.status(400).json({ message: 'Veuillez mettre à jour votre skin.' });
+        return;
+    }
+
+    const base64Skin = await getBase64Image(matchingUser.skin.link);
+
+    const payload = { ...matchingUser, password: undefined, skin: { ...matchingUser.skin, link: base64Skin } };
+
     const authToken = jwt.sign(payload, process.env.JWT_SECRET_KEY!, { expiresIn: '1h' });
 
-    res.status(200).json({ message: 'Authenticated', user: {...matchingUser, password: undefined, token: authToken }});
+    res.status(200).json({ message: 'Authenticated', user: {...payload, token: authToken }});
 })
 
 router.post('/register', authMiddleware.handleRegister, async (req, res) => {
