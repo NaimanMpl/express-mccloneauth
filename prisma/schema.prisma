@@ -15,18 +15,22 @@ datasource db {
 }
 
 model Users {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  skin      Skin?
+  id          String       @id @default(uuid())
+  name        String       @unique
+  email       String       @unique
+  password    String
+  createdAt   DateTime     @default(now())
+  admin       Boolean      @default(false)
+  skin        Skin?
+  roleId      Int          @default(1)
+  role        Role         @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissions Permission[]
 }
 
 model Skin {
   id     Int    @id @default(autoincrement())
   link   String
-  user   Users  @relation(fields: [userId], references: [id])
+  user   Users  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @unique
 }
 
@@ -41,4 +45,21 @@ model ServerInfo {
   status        ServerStatus
   ip            String
   onlinePlayers Int
+}
+
+model Role {
+  id          Int          @id @default(autoincrement())
+  name        String @unique
+  score       Int
+  Users       Users[]
+  permissions Permission[]
+}
+
+model Permission {
+  id       Int    @id @default(autoincrement())
+  name     String
+  authorId String
+  author   Users  @relation(fields: [authorId], references: [id])
+  roleId   Int
+  role     Role   @relation(fields: [roleId], references: [id])
 }
