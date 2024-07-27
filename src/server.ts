@@ -16,5 +16,7 @@ app.use(express.json())
 app.use('/auth', authRoute);
 
 app.listen(process.env.PORT, () => {
-    console.log(`Server listening at port ${process.env.PORT}`)
-})
+    console.log(`Server listening at port ${process.env.PORT}`);
+});
+
+export default app;
