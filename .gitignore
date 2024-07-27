@@ -6,3 +6,4 @@ prisma/migrations/
 .env*.local
 
 /build
+dist/
